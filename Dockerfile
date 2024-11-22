@@ -1,12 +1,13 @@
 FROM public.ecr.aws/amazonlinux/amazonlinux:2 AS base-runtime
 ARG TARGETARCH
 
-RUN apt-get update && \
-    apt-get install -y \
+RUN yum update && \
+    yum install -y \
     golang \
     graphviz \
     linux-tools-generic \
-    && rm -rf /var/lib/apt/lists/*
+    && yum -y clean all \
+    && rm -fr /var/cache 
 
 RUN go install github.com/google/pprof@latest
 

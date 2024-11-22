@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/amazonlinux:2 AS base-runtime
+FROM public.ecr.aws/amazonlinux/amazonlinux:2 AS base-runtime
 ARG TARGETARCH
 
 RUN apt-get update && \

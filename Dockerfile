@@ -10,8 +10,6 @@ RUN apt-get update && \
     linux-tools-generic \
     && rm -rf /var/lib/apt/lists/*
 
-RUN https://go.dev/dl/
-
 FROM base-runtime AS base
 ARG BAZELISK_VERSION
 ARG TARGETARCH

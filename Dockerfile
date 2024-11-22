@@ -6,8 +6,11 @@ ARG TARGETARCH
 
 RUN apt-get update && \
     apt-get install -y \
+    golang \
     linux-tools-generic \
     && rm -rf /var/lib/apt/lists/*
+
+RUN https://go.dev/dl/
 
 FROM base-runtime AS base
 ARG BAZELISK_VERSION

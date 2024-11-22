@@ -7,6 +7,7 @@ ARG TARGETARCH
 RUN apt-get update && \
     apt-get install -y \
     golang \
+    graphviz \
     linux-tools-generic \
     && rm -rf /var/lib/apt/lists/*
 

@@ -10,6 +10,8 @@ RUN apt-get update && \
     linux-tools-generic \
     && rm -rf /var/lib/apt/lists/*
 
+RUN go install github.com/google/pprof@latest
+
 FROM base-runtime AS base
 ARG BAZELISK_VERSION
 ARG TARGETARCH

@@ -6,8 +6,12 @@ ARG TARGETARCH
 
 RUN apt-get update && \
     apt-get install -y \
+    golang \
+    graphviz \
     linux-tools-generic \
     && rm -rf /var/lib/apt/lists/*
+
+RUN go install github.com/google/pprof@latest
 
 FROM base-runtime AS base
 ARG BAZELISK_VERSION
@@ -17,7 +21,6 @@ RUN apt-get update && \
     apt-get install -y \
     g++ \
     git \
-    golang \
     libcap-dev \
     libelf-dev \
     && rm -rf /var/lib/apt/lists/*

@@ -1,45 +1,32 @@
-ARG BASE_VERSION="1.22-2024-09-17T19-00-54"
-ARG BAZELISK_VERSION="v1.24.0"
-FROM registry.hub.docker.com/istio/base:${BASE_VERSION} AS base-runtime
-ARG BAZELISK_VERSION
-ARG TARGETARCH
+ARG ISTIO_VERSION=1.22.6
+ARG BASE_IMAGE_TAG=1.22-2024-09-17T19-00-54
+FROM registry.hub.docker.com/istio/base:${BASE_IMAGE_TAG} AS runtime
 
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -qqy \
     golang \
     graphviz \
     linux-tools-generic \
     && rm -rf /var/lib/apt/lists/*
 
-RUN go install github.com/google/pprof@latest
+RUN go install github.com/google/pprof@latest \
+    && export PATH=$PATH:$(go env GOPATH)/bin
 
-FROM base-runtime AS base
-ARG BAZELISK_VERSION
-ARG TARGETARCH
+FROM runtime AS src
+ARG ISTIO_VERSION
 
 RUN apt-get update && \
-    apt-get install -y \
-    g++ \
+    apt-get install -qqy \
     git \
-    libcap-dev \
-    libelf-dev \
     && rm -rf /var/lib/apt/lists/*
-
-RUN curl -Lso bazelisk https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-${TARGETARCH} \
-    && chmod 755 bazelisk \
-    && mv bazelisk /usr/local/bin/bazelisk \
-    && ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
 
 WORKDIR /src
 
-RUN git clone --depth 1 -b master https://github.com/google/perf_data_converter.git
+RUN git clone --depth 1 -b ${ISTIO_VERSION} https://github.com/istio/tools.git \
+    && git clone --depth 1 -b master https://github.com/brendangregg/FlameGraph.git
 
-FROM base AS build
+FROM runtime
 
-WORKDIR /src/perf_data_converter
-
-RUN bazel build src:perf_to_profile
-
-FROM base-runtime
-
-COPY --from=build /src/perf_data_converter/bazel-bin/src/perf_to_profile /usr/local/bin/
+COPY --from=src /src/tools/perf/benchmark/flame/get_perfdata.sh /etc/istio/proxy/get_perfdata.sh
+COPY --from=src /src/tools/perf/benchmark/flame/flame.sh /etc/istio/proxy/flame.sh
+COPY --from=src /src/FlameGraph /etc/istio/proxy/

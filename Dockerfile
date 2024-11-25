@@ -6,6 +6,7 @@ RUN apt-get update && \
     apt-get install -qqy \
     golang \
     graphviz \
+    linux-libc-dev \
     linux-tools-generic \
     && rm -rf /var/lib/apt/lists/*
 

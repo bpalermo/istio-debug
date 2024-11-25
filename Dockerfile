@@ -29,4 +29,4 @@ FROM runtime
 
 COPY --from=src /src/tools/perf/benchmark/flame/get_perfdata.sh /etc/istio/proxy/get_perfdata.sh
 COPY --from=src /src/tools/perf/benchmark/flame/flame.sh /etc/istio/proxy/flame.sh
-COPY --from=src /src/FlameGraph /etc/istio/proxy/
+COPY --from=src /src/FlameGraph /etc/istio/proxy/FlameGraph
